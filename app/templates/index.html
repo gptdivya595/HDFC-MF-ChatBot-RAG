@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ request.url_for('assets', path='styles.css') }}">
+  <link rel="stylesheet" href="/assets/styles.css">
   {% if inline_css %}
   <style>{{ inline_css | safe }}</style>
   {% endif %}
@@ -41,7 +41,7 @@
     <div class="top-bar">
       <div class="brand">
         <div class="avatar" aria-hidden="true">
-          <img class="leaf-icon" src="{{ request.url_for('assets', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+          <img class="leaf-icon" src="/assets/icons/leaf-mark.svg" width="18" height="18" alt="">
         </div>
         <div class="brand-text">
           <h1>{{ app_name }}</h1>
@@ -104,7 +104,7 @@
 
     <div class="typing-row" id="typing-row" aria-hidden="true">
       <div class="typing-avatar" aria-hidden="true">
-        <img class="leaf-icon" src="{{ request.url_for('assets', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+        <img class="leaf-icon" src="/assets/icons/leaf-mark.svg" width="18" height="18" alt="">
       </div>
       <div class="typing-bubble" aria-label="FundClear is thinking">
         <span></span><span></span><span></span>
@@ -154,7 +154,7 @@
       "examples": examples | default([], true),
       "docsHref": "/docs",
       "apiBase": "",
-      "leafIcon": request.url_for("assets", path="icons/leaf-mark.svg") | string
+      "leafIcon": "/assets/icons/leaf-mark.svg"
     } | tojson }}
   </script>
   <script>
@@ -162,6 +162,6 @@
       document.getElementById("fundclear-config").textContent
     );
   </script>
-  <script src="{{ request.url_for('assets', path='app.js') }}" defer></script>
+  <script src="/assets/app.js" defer></script>
 </body>
 </html>

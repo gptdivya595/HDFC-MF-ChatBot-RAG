@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 try:
     from dotenv import load_dotenv
@@ -129,6 +130,9 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url=None,
 )
+# TLS terminates at Cloud Run; trust X-Forwarded-Proto so URLs use https.
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+
 templates = Jinja2Templates(directory=str(APP_ROOT / "templates"))
 ASSETS_DIR = PUBLIC_ASSETS_DIR if PUBLIC_ASSETS_DIR.exists() else LOCAL_ASSETS_DIR
 app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
