@@ -119,6 +119,8 @@ def _serialize_response(response) -> dict[str, object]:
         "source_count": len(response.sources),
         "source_filename": primary_source.filename if primary_source else "",
         "page_number": primary_source.page_number if primary_source else None,
+        "is_refusal": bool(response.is_refusal),
+        "educational_url": response.educational_url,
         "retrieved_excerpts": retrieved,
     }
 
@@ -175,6 +177,7 @@ async def index(request: Request) -> HTMLResponse:
             "request": request,
             "app_name": "FundClear",
             "subtitle": "HDFC MF facts assistant",
+            "secondary_badge": "Groww use-case demo",
             "examples": list(EXAMPLE_QUESTIONS),
             "example_chips": list(zip(EXAMPLE_QUESTIONS, EXAMPLE_CHIP_LABELS, strict=True)),
             "sources_footer_path": "data/sources/sources.csv",
@@ -241,6 +244,7 @@ async def config() -> dict[str, object]:
     return {
         "app_name": "FundClear",
         "subtitle": "HDFC MF facts assistant",
+        "secondary_badge": "Groww use-case demo",
         "examples": list(EXAMPLE_QUESTIONS),
         "status": {
             "indexed_files": status["eligible_pdf_count"],

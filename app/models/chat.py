@@ -30,9 +30,8 @@ class ChatbotResponse:
     answer: str
     sources: list[SourceCitation] = field(default_factory=list)
     last_updated: str = "Based on available documents"
-    # FIX: Added is_refusal flag so frontend can suppress citation UI on refusal responses.
-    # Previously refusals and grounded answers were serialized identically.
     is_refusal: bool = False
+    educational_url: str = ""
 
     @property
     def source_text(self) -> str:

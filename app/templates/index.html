@@ -15,11 +15,15 @@
 <body>
   <div id="intro" role="dialog" aria-labelledby="intro-title">
     <div class="intro-card">
-      <span class="tag">Facts-only · Official sources</span>
+      <div class="intro-tags">
+        <span class="tag">Facts-only · Official sources</span>
+        <span class="tag tag-soft">{{ secondary_badge }}</span>
+      </div>
       <h2 id="intro-title">{{ app_name }}</h2>
       <p>
         Your guided assistant for <strong>HDFC Mutual Fund</strong> factual questions — expense ratios,
         exit loads, ELSS lock-in, SIP minimums, and more — from the indexed corpus only.
+        Built as a clean facts-first experience for the <strong>Groww</strong> milestone context.
       </p>
       <ul class="intro-steps">
         <li><span class="num">1</span> Ask in plain English using the examples below.</li>
@@ -44,8 +48,11 @@
           <img class="leaf-icon" src="/assets/icons/leaf-mark.svg" width="18" height="18" alt="">
         </div>
         <div class="brand-text">
-          <h1>{{ app_name }}</h1>
-          <p class="sub">{{ subtitle }}</p>
+          <div class="brand-heading">
+            <h1>{{ app_name }}</h1>
+            <span class="mini-badge">{{ secondary_badge }}</span>
+          </div>
+          <p class="sub">{{ subtitle }} · Official-document answers only</p>
         </div>
       </div>
       <div
@@ -126,6 +133,7 @@
 
     <footer>
       <strong>Facts-only. No investment advice.</strong> ·
+      <span>Groww milestone adaptation</span> ·
       Sources: <code>{{ sources_footer_path }}</code> ·
       <a href="/docs" id="docs-link">API docs</a>
     </footer>
@@ -151,6 +159,7 @@
     {{ {
       "appName": app_name | default("FundClear", true),
       "subtitle": subtitle | default("HDFC MF facts assistant", true),
+      "secondaryBadge": secondary_badge | default("Groww use-case demo", true),
       "examples": examples | default([], true),
       "docsHref": "/docs",
       "apiBase": "",

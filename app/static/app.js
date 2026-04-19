@@ -43,6 +43,12 @@ function focusComposer() {
   input.focus({ preventScroll: true });
 }
 
+function formatSourceLabel(value) {
+  if (!value || value === "N/A") return "Official documents";
+  const compact = String(value).replace(/_0\b/g, "").trim();
+  return compact.length > 54 ? `${compact.slice(0, 54).trim()}...` : compact;
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -81,6 +87,7 @@ function showToast(message, tone = "info") {
 }
 
 function dismissIntro(persist = false) {
+  if (!intro) return;
   if (persist) {
     localStorage.setItem(INTRO_STORAGE_KEY, "1");
   } else {
@@ -103,12 +110,17 @@ function closeAbout() {
 }
 
 function buildWelcomeState() {
+  const badge = state.config.secondaryBadge
+    ? `<span class="welcome-badge">${escapeHtml(state.config.secondaryBadge)}</span>`
+    : "";
   return `
     <section class="welcome-card msg">
       <p class="bubble-title">FundClear</p>
+      ${badge}
       <h3>Ask a factual HDFC mutual fund question</h3>
       <p>
         FundClear answers only from indexed HDFC Mutual Fund documents.
+        It is presented as a compact <strong>Groww</strong> milestone demo, while keeping the product name FundClear.
         Try benchmark, exit load, ELSS lock-in, expense ratio, minimum investment, or riskometer queries.
       </p>
       <ul>
@@ -195,8 +207,8 @@ function buildAssistantBubble(message) {
   }
 
   const sourceLine = message.citationUrl
-    ? `<a class="source-link" href="${escapeHtml(message.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(message.sourceText || "Official source")} ↗</a>`
-    : escapeHtml(message.sourceText || "Official documents");
+    ? `<a class="source-link" href="${escapeHtml(message.citationUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(formatSourceLabel(message.sourceText || "Official source"))} ↗</a>`
+    : escapeHtml(formatSourceLabel(message.sourceText || "Official documents"));
 
   const updatedLine = message.lastUpdated && message.lastUpdated !== "N/A" && message.lastUpdated !== ""
     ? `<div class="meta-line"><strong>Updated:</strong> ${escapeHtml(message.lastUpdated)}</div>`
@@ -486,6 +498,7 @@ resetButton?.addEventListener("click", () => {
   state.messages = [];
   renderMessages();
   setStatusCardOpen(false);
+  focusComposer();
   showToast("Started a new conversation", "success");
 });
 
@@ -496,7 +509,7 @@ introAgain?.addEventListener("click", () => {
 });
 
 introButton?.addEventListener("click", () => {
-  intro.classList.remove("hidden", "leaving");
+  intro?.classList.remove("hidden", "leaving");
 });
 
 docsLink?.addEventListener("click", () => showToast("Opening API docs", "info"));

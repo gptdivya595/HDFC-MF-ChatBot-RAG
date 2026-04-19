@@ -168,10 +168,7 @@ class MutualFundRAGAssistant:
         self.config = config or RAGConfig()
         self.config.data_dir.mkdir(parents=True, exist_ok=True)
         self.config.index_dir.mkdir(parents=True, exist_ok=True)
-        self._embeddings = OpenAIEmbeddings(
-            api_key=self._require_openai_api_key(),
-            model=os.environ.get("OPENAI_EMBEDDING_MODEL", self.config.embeddings_model).strip(),
-        )
+        self._embeddings: OpenAIEmbeddings | None = None
         self._vector_store: FAISS | None = None
         self._text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.config.chunk_size,
@@ -188,6 +185,14 @@ class MutualFundRAGAssistant:
                 "OPENAI_API_KEY is required for embeddings and answer synthesis in this deployment."
             )
         return key
+
+    def _get_embeddings(self) -> OpenAIEmbeddings:
+        if self._embeddings is None:
+            self._embeddings = OpenAIEmbeddings(
+                api_key=self._require_openai_api_key(),
+                model=os.environ.get("OPENAI_EMBEDDING_MODEL", self.config.embeddings_model).strip(),
+            )
+        return self._embeddings
 
     def _citation_url_for_pdf(self, filename: str) -> str:
         mapped = self._pdf_to_citation_url.get(filename)
@@ -305,6 +310,7 @@ class MutualFundRAGAssistant:
             return ChatbotResponse(
                 answer=ADVICE_REFUSAL_RESPONSE,
                 is_refusal=True,
+                educational_url=REFUSAL_EDUCATIONAL_URL,
             )
 
         # Off-topic guard: must run BEFORE retrieval, not after.
@@ -314,6 +320,7 @@ class MutualFundRAGAssistant:
             return ChatbotResponse(
                 answer=OFFSCOPE_RESPONSE,
                 is_refusal=True,
+                educational_url=REFUSAL_EDUCATIONAL_URL,
             )
 
         try:
@@ -473,13 +480,13 @@ class MutualFundRAGAssistant:
         if not should_rebuild and self._vector_store is None:
             self._vector_store = FAISS.load_local(
                 str(self.config.index_dir),
-                self._embeddings,
+                self._get_embeddings(),
                 allow_dangerous_deserialization=True,
             )
             return len(documents)
 
         chunks = self._chunk_documents(documents)
-        self._vector_store = FAISS.from_documents(chunks, self._embeddings)
+        self._vector_store = FAISS.from_documents(chunks, self._get_embeddings())
         self._vector_store.save_local(str(self.config.index_dir))
         self.config.manifest_path.write_text(
             json.dumps(self._manifest_payload(), indent=2),

@@ -1,6 +1,6 @@
 # FundClear
 
-`FundClear` is a facts-only mutual fund FAQ assistant built on an HDFC Mutual Fund document corpus. It uses local PDF ingestion, HuggingFace embeddings, a FAISS vector index, and a FastAPI-served web UI. The deployable application now lives inside the `app/` folder so `app/` can be used as the Railway working directory.
+`FundClear` is a facts-only mutual fund FAQ assistant built on an HDFC Mutual Fund document corpus. It is also positioned as a compact Groww milestone demo while keeping the product name `FundClear`. The deployable application now lives inside the `app/` folder so `app/` can be used as the Railway working directory.
 
 ## What it does
 
