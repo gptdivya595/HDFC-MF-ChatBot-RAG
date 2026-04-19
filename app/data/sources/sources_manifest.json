@@ -1,0 +1,80 @@
+[
+  {
+    "path": "Annual Disclosure of Riskometers- HDFC MF - as at March 31, 2025.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_HDFC_OR_AMFI_URL",
+    "document_type": "disclosure",
+    "scheme_id": null
+  },
+  {
+    "path": "HDFC ELSS Tax saver Notice for Expense change 11-06-2025 DP WEF 18-06-2025.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "notice",
+    "scheme_id": "HDFC_ELSS_TAX_SAVER"
+  },
+  {
+    "path": "HDFC Flexi Cap Fund Notice for Expense change 09-02-2026 DP WEF 16-02-2026.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "notice",
+    "scheme_id": "HDFC_FLEXI_CAP"
+  },
+  {
+    "path": "HDFC Large Cap Fund Notice for Expense change 09-02-2026 DP WEF 16-02-2026.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "notice",
+    "scheme_id": "HDFC_LARGE_CAP"
+  },
+  {
+    "path": "HDFC MF Factsheet - December 2025_0.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "factsheet",
+    "scheme_id": null
+  },
+  {
+    "path": "HDFC TaxSaver - Presentation - February, 2021.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "presentation",
+    "scheme_id": "HDFC_ELSS_TAX_SAVER"
+  },
+  {
+    "path": "Investor Charter - MF_0.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_AMFI_OR_SEBI_URL",
+    "document_type": "regulator_or_amc_policy",
+    "scheme_id": null
+  },
+  {
+    "path": "KIM - HDFC ELSS Tax Saver dated November 21, 2024.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "kim",
+    "scheme_id": "HDFC_ELSS_TAX_SAVER"
+  },
+  {
+    "path": "KIM - HDFC Flexi Cap Fund dated May 30, 2025.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "kim",
+    "scheme_id": "HDFC_FLEXI_CAP"
+  },
+  {
+    "path": "KIM - HDFC Top 100 Fund dated November 21, 2024.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "kim",
+    "scheme_id": "HDFC_TOP_100"
+  },
+  {
+    "path": "Other Funds - RSF (Hybrid Equity).pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "supplement",
+    "scheme_id": null
+  },
+  {
+    "path": "SID - HDFC Flexi Cap Fund dated November 21, 2025_0.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "sid",
+    "scheme_id": "HDFC_FLEXI_CAP"
+  },
+  {
+    "path": "SID - HDFC Large Cap Fund dated November 21, 2025_0.pdf",
+    "canonical_url": "REPLACE_WITH_OFFICIAL_URL",
+    "document_type": "sid",
+    "scheme_id": "HDFC_LARGE_CAP"
+  }
+]

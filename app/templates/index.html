@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{ app_name }} — facts-only fund assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <div id="intro" role="dialog" aria-labelledby="intro-title">
+    <div class="intro-card">
+      <span class="tag">Facts-only · Official sources</span>
+      <h2 id="intro-title">{{ app_name }}</h2>
+      <p>
+        Your guided assistant for <strong>HDFC Mutual Fund</strong> factual questions — expense ratios,
+        exit loads, ELSS lock-in, SIP minimums, and more — from the indexed corpus only.
+      </p>
+      <ul class="intro-steps">
+        <li><span class="num">1</span> Ask in plain English using the examples below.</li>
+        <li><span class="num">2</span> {{ app_name }} retrieves official context and answers in max 3 sentences.</li>
+        <li><span class="num">3</span> Check the <strong>source link</strong> on each reply for the AMC page.</li>
+      </ul>
+      <div class="intro-warn">
+        <strong>Facts-only. No investment advice.</strong> {{ app_name }} does not recommend buys or sells.
+        For decisions, speak with a SEBI-registered investment advisor.
+      </div>
+      <div class="intro-actions" style="margin-top:1rem">
+        <button type="button" class="btn-primary" id="intro-start">Start conversation</button>
+        <button type="button" class="btn-ghost" id="intro-again">Show this intro next time</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="top-bar">
+      <div class="brand">
+        <div class="avatar" aria-hidden="true">
+          <img class="leaf-icon" src="{{ request.url_for('static', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+        </div>
+        <div class="brand-text">
+          <h1>{{ app_name }}</h1>
+          <p class="sub">{{ subtitle }}</p>
+        </div>
+      </div>
+      <div
+        class="status-cluster"
+        id="status-cluster"
+        role="group"
+        aria-label="Connection and activity"
+      >
+        <div
+          class="trust-strip activity-graph"
+          id="activity-graph"
+          role="button"
+          tabindex="0"
+          aria-label="Activity graph. Animates while FundClear is thinking. Press Space or click for a pulse."
+          title="Activity graph — pulses while FundClear is thinking"
+        >
+          <span class="bar small"></span>
+          <span class="bar gold mid"></span>
+          <span class="bar tall"></span>
+          <span class="bar gold"></span>
+          <span class="bar mid"></span>
+          <span class="bar gold tall"></span>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text" aria-live="polite">Online</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <span class="icon-label" id="toolbar-hint">Facts-only · cited sources</span>
+      <div style="display:flex;align-items:center;gap:0.35rem">
+        <button type="button" class="icon-btn" id="btn-status" title="Document status" aria-label="Document status">🗂</button>
+        <button type="button" class="icon-btn" id="btn-new" title="Clear chat and start fresh" aria-label="New chat">＋</button>
+        <button type="button" class="icon-btn" id="btn-about" title="About & limits" aria-label="About FundClear">ℹ️</button>
+        <button type="button" class="icon-btn" id="btn-intro" title="Show intro again" aria-label="Show welcome intro">?</button>
+      </div>
+    </div>
+
+    <section class="status-card" id="status-card" aria-live="polite">
+      <h3>Document status</h3>
+      <div class="line">PDFs in source folder: <span id="status-pdfs">—</span></div>
+      <div class="line">Eligible official PDFs: <span id="status-eligible">—</span></div>
+      <div class="line">Vector index ready: <span id="status-index">—</span></div>
+      <div class="line">Indexed chunks: <span id="status-chunks">—</span></div>
+      <div class="status-actions">
+        <button type="button" class="status-btn" id="btn-rebuild-index">Rebuild index</button>
+      </div>
+      <div class="footnote">
+        Only local official PDFs are used for these counts. No blogs, no portfolio data, and no investment advice.
+      </div>
+    </section>
+
+    <div id="chat-scroll" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+    <div class="typing-row" id="typing-row" aria-hidden="true">
+      <div class="typing-avatar" aria-hidden="true">
+        <img class="leaf-icon" src="{{ request.url_for('static', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+      </div>
+      <div class="typing-bubble" aria-label="FundClear is thinking">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="composer">
+        <textarea id="q" rows="1" placeholder="Ask a factual question about HDFC funds…" autocomplete="off" aria-label="Your message"></textarea>
+        <button type="button" class="send" id="send" aria-label="Send">➤</button>
+      </div>
+      <p class="composer-hint" id="composer-hint"><kbd>Enter</kbd> send · <kbd>Shift</kbd>+<kbd>Enter</kbd> new line · <kbd>Esc</kbd> close panels</p>
+      <div class="chips" id="chips">
+        {% for question, label in example_chips %}
+        <button type="button" class="chip" data-q="{{ question }}">{{ label }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <footer>
+      <strong>Facts-only. No investment advice.</strong> ·
+      Sources: <code>{{ sources_footer_path }}</code> ·
+      <a href="/docs" id="docs-link">API docs</a>
+    </footer>
+  </div>
+
+  <div id="toast-root" aria-live="polite" aria-relevant="additions"></div>
+
+  <div class="modal-backdrop" id="modal-about" role="dialog" aria-modal="true" aria-labelledby="about-title">
+    <div class="modal">
+      <h3 id="about-title">About {{ app_name }}</h3>
+      <p>
+        Answers come from indexed HDFC / official documents only. There is no portfolio access and no personalized advice.
+        Replies include a source URL — verify on the AMC site before making any decision.
+      </p>
+      <p style="font-size:0.82rem;color:#713f12;background:#fefce8;border-left:3px solid #ca8a04;padding:0.55rem 0.7rem;border-radius:8px;">
+        <strong>Facts-only. No investment advice.</strong>
+      </p>
+      <button type="button" class="btn-primary" id="modal-close" style="width:100%">Got it</button>
+    </div>
+  </div>
+
+  <script id="fundclear-config" type="application/json">
+    {{ {
+      "appName": app_name | default("FundClear", true),
+      "subtitle": subtitle | default("HDFC MF facts assistant", true),
+      "examples": examples | default([], true),
+      "docsHref": "/docs",
+      "apiBase": "",
+      "leafIcon": request.url_for("static", path="icons/leaf-mark.svg") | string
+    } | tojson }}
+  </script>
+  <script>
+    window.__FUNDCLEAR_CONFIG__ = JSON.parse(
+      document.getElementById("fundclear-config").textContent
+    );
+  </script>
+  <script src="{{ request.url_for('static', path='app.js') }}" defer></script>
+</body>
+</html>
