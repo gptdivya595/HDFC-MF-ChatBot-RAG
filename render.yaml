@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: fundclear
+    runtime: python
+    plan: free
+    rootDir: app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -c gunicorn.conf.py server:app
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: OPENAI_API_KEY
+        sync: false
