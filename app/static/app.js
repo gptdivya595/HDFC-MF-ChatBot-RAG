@@ -306,10 +306,41 @@ function showError(message) {
   chatScroll.innerHTML = `<div class="error-banner">${escapeHtml(message)}</div>${chatScroll.innerHTML}`;
 }
 
+async function parseApiResponse(response, fallbackMessage) {
+  const rawText = await response.text();
+  let data = null;
+
+  if (rawText) {
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      if (!response.ok) {
+        throw new Error(`${fallbackMessage} (HTTP ${response.status})`);
+      }
+      throw new Error(fallbackMessage);
+    }
+  }
+
+  if (!response.ok) {
+    const apiMessage =
+      data?.error ||
+      data?.detail ||
+      data?.message ||
+      (rawText ? `${fallbackMessage} (HTTP ${response.status})` : `${fallbackMessage} (empty response, HTTP ${response.status})`);
+    throw new Error(apiMessage);
+  }
+
+  if (!data) {
+    throw new Error(`${fallbackMessage} (empty response)`);
+  }
+
+  return data;
+}
+
 async function loadConfig() {
   try {
     const response = await fetch("/api/config");
-    const data = await response.json();
+    const data = await parseApiResponse(response, "Unable to load app config.");
     state.config = data;
 
     const nextStatus = data.status.index_ready ? "Online" : "Index missing";
@@ -339,10 +370,7 @@ async function loadConfig() {
 async function refreshCorpusStatus() {
   try {
     const response = await fetch("/api/corpus-status");
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.detail || "Could not load document status.");
-    }
+    const data = await parseApiResponse(response, "Could not load document status.");
     fillCorpusStatus(data);
   } catch (error) {
     showToast(error.message || "Could not load document status.", "warn");
@@ -354,8 +382,8 @@ async function rebuildIndex() {
   showToast("Rebuilding index…", "info");
   try {
     const response = await fetch("/api/rebuild-index", { method: "POST" });
-    const data = await response.json();
-    if (!response.ok || data.status !== "ok") {
+    const data = await parseApiResponse(response, "Could not rebuild index.");
+    if (data.status !== "ok") {
       throw new Error(data.detail || "Could not rebuild index.");
     }
     fillCorpusStatus(data);
@@ -382,8 +410,8 @@ async function askQuestion(text) {
       body: JSON.stringify({ question }),
     });
 
-    const data = await response.json();
-    if (!response.ok || !data.ok) {
+    const data = await parseApiResponse(response, "Unable to fetch an answer right now.");
+    if (!data.ok) {
       throw new Error(data.error || "Unable to fetch an answer right now.");
     }
 

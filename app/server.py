@@ -8,6 +8,7 @@ from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from pydantic import BaseModel
 
 try:
@@ -133,6 +134,26 @@ ASSETS_DIR = PUBLIC_ASSETS_DIR if PUBLIC_ASSETS_DIR.exists() else LOCAL_ASSETS_D
 app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=500,
+            content={"ok": False, "error": str(exc) or "Internal server error."},
+        )
+    raise exc
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if request.url.path.startswith("/api/"):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"ok": False, "error": exc.detail if isinstance(exc.detail, str) else "Request failed."},
+        )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
@@ -225,8 +246,14 @@ async def chat(payload: ChatRequest):
             content={"ok": False, "error": "Please enter a question."},
         )
 
-    assistant = get_assistant()
-    response = assistant.answer_query(question)
+    try:
+        assistant = get_assistant()
+        response = assistant.answer_query(question)
+    except Exception as exc:
+        return JSONResponse(
+            status_code=500,
+            content={"ok": False, "error": str(exc) or "Unable to answer right now."},
+        )
     return {"ok": True, "question": question, "response": _serialize_response(response)}
 
 
