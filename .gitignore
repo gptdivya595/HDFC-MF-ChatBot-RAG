@@ -38,3 +38,5 @@ dist/
 # Editors
 .idea/
 .vscode/
+
+app/deploy.sh

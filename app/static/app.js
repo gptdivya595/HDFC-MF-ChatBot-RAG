@@ -53,7 +53,7 @@ function escapeHtml(value) {
 }
 
 const LEAF_ICON_SRC =
-  (state.config && state.config.leafIcon) || "/static/icons/leaf-mark.svg";
+  (state.config && state.config.leafIcon) || "/assets/icons/leaf-mark.svg";
 const LEAF_ICON = `<img class="leaf-icon" src="${escapeHtml(LEAF_ICON_SRC)}" width="18" height="18" alt="" aria-hidden="true">`;
 
 function autoResizeTextarea() {

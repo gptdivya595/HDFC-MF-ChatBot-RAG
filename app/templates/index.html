@@ -38,7 +38,7 @@
     <div class="top-bar">
       <div class="brand">
         <div class="avatar" aria-hidden="true">
-          <img class="leaf-icon" src="{{ request.url_for('static', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+          <img class="leaf-icon" src="{{ request.url_for('assets', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
         </div>
         <div class="brand-text">
           <h1>{{ app_name }}</h1>
@@ -101,7 +101,7 @@
 
     <div class="typing-row" id="typing-row" aria-hidden="true">
       <div class="typing-avatar" aria-hidden="true">
-        <img class="leaf-icon" src="{{ request.url_for('static', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
+        <img class="leaf-icon" src="{{ request.url_for('assets', path='icons/leaf-mark.svg') }}" width="18" height="18" alt="">
       </div>
       <div class="typing-bubble" aria-label="FundClear is thinking">
         <span></span><span></span><span></span>
@@ -151,7 +151,7 @@
       "examples": examples | default([], true),
       "docsHref": "/docs",
       "apiBase": "",
-      "leafIcon": request.url_for("static", path="icons/leaf-mark.svg") | string
+      "leafIcon": request.url_for("assets", path="icons/leaf-mark.svg") | string
     } | tojson }}
   </script>
   <script>

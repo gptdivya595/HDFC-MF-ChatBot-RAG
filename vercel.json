@@ -1,9 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "server.py": {
-      "maxDuration": 300,
-      "includeFiles": "app/{templates,data,faiss_index}/**"
-    }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }
