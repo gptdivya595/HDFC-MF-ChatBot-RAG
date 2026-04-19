@@ -134,6 +134,14 @@ ASSETS_DIR = PUBLIC_ASSETS_DIR if PUBLIC_ASSETS_DIR.exists() else LOCAL_ASSETS_D
 app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
+def _read_asset_text(filename: str) -> str:
+    path = ASSETS_DIR / filename
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
     if request.url.path.startswith("/api/"):
@@ -166,6 +174,7 @@ async def index(request: Request) -> HTMLResponse:
             "examples": list(EXAMPLE_QUESTIONS),
             "example_chips": list(zip(EXAMPLE_QUESTIONS, EXAMPLE_CHIP_LABELS, strict=True)),
             "sources_footer_path": "data/sources/sources.csv",
+            "inline_css": _read_asset_text("styles.css"),
         },
     )
 
