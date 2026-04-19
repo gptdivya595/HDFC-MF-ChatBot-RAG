@@ -20,6 +20,8 @@ from services.rag_service import MutualFundRAGAssistant
 
 
 APP_ROOT = Path(__file__).resolve().parent
+PUBLIC_ASSETS_DIR = APP_ROOT.parent / "public" / "assets"
+LOCAL_ASSETS_DIR = APP_ROOT / "static"
 if load_dotenv is not None:
     env_path = APP_ROOT / ".env"
     if env_path.is_file():
@@ -127,7 +129,8 @@ app = FastAPI(
     redoc_url=None,
 )
 templates = Jinja2Templates(directory=str(APP_ROOT / "templates"))
-app.mount("/static", StaticFiles(directory=str(APP_ROOT / "static")), name="static")
+ASSETS_DIR = PUBLIC_ASSETS_DIR if PUBLIC_ASSETS_DIR.exists() else LOCAL_ASSETS_DIR
+app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
 @app.get("/", response_class=HTMLResponse)
