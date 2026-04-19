@@ -13,3 +13,5 @@ services:
         value: "3.12"
       - key: OPENAI_API_KEY
         sync: false
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small

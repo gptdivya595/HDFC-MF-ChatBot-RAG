@@ -20,7 +20,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_community.vectorstores.utils import maximal_marginal_relevance
 from langchain_core.documents import Document
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 from models.chat import ChatbotResponse, SourceCitation
 from models.config import DEFAULT_OFFICIAL_CITATION_FALLBACK, RAGConfig
@@ -168,9 +168,9 @@ class MutualFundRAGAssistant:
         self.config = config or RAGConfig()
         self.config.data_dir.mkdir(parents=True, exist_ok=True)
         self.config.index_dir.mkdir(parents=True, exist_ok=True)
-        self._embeddings = HuggingFaceEmbeddings(
-            model_name=self.config.embeddings_model,
-            encode_kwargs={"normalize_embeddings": True},
+        self._embeddings = OpenAIEmbeddings(
+            api_key=self._require_openai_api_key(),
+            model=os.environ.get("OPENAI_EMBEDDING_MODEL", self.config.embeddings_model).strip(),
         )
         self._vector_store: FAISS | None = None
         self._text_splitter = RecursiveCharacterTextSplitter(
@@ -180,6 +180,14 @@ class MutualFundRAGAssistant:
         self._pdf_to_citation_url = load_local_pdf_to_citation_url(
             self.config.sources_catalog_csv
         )
+
+    def _require_openai_api_key(self) -> str:
+        key = os.environ.get("OPENAI_API_KEY", "").strip()
+        if not key:
+            raise RuntimeError(
+                "OPENAI_API_KEY is required for embeddings and answer synthesis in this deployment."
+            )
+        return key
 
     def _citation_url_for_pdf(self, filename: str) -> str:
         mapped = self._pdf_to_citation_url.get(filename)
@@ -474,7 +482,7 @@ class MutualFundRAGAssistant:
         self._vector_store = FAISS.from_documents(chunks, self._embeddings)
         self._vector_store.save_local(str(self.config.index_dir))
         self.config.manifest_path.write_text(
-            json.dumps(self._build_manifest(), indent=2),
+            json.dumps(self._manifest_payload(), indent=2),
             encoding="utf-8",
         )
         return len(documents)
@@ -578,6 +586,13 @@ class MutualFundRAGAssistant:
             )
         return manifest
 
+    def _manifest_payload(self) -> dict[str, object]:
+        return {
+            "embedding_backend": "openai",
+            "embedding_model": os.environ.get("OPENAI_EMBEDDING_MODEL", self.config.embeddings_model).strip(),
+            "documents": self._build_manifest(),
+        }
+
     def _index_is_stale(self) -> bool:
         index_file = self.config.index_dir / "index.faiss"
         store_file = self.config.index_dir / "index.pkl"
@@ -585,11 +600,13 @@ class MutualFundRAGAssistant:
             return True
 
         try:
-            current_manifest = self._build_manifest()
+            current_manifest = self._manifest_payload()
             stored_manifest = json.loads(self.config.manifest_path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, OSError):
             return True
 
+        if not isinstance(stored_manifest, dict):
+            return True
         return current_manifest != stored_manifest
 
     def _compose_answer(

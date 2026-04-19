@@ -18,7 +18,7 @@ class RAGConfig:
     manifest_path: Path = APP_DIR / "faiss_index" / "manifest.json"
     chunk_size: int = 400
     chunk_overlap: int = 150
-    embeddings_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embeddings_model: str = "text-embedding-3-small"
     top_k: int = 8
     fetch_k: int = 12
     similarity_threshold: float = 0.45

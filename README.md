@@ -5,7 +5,7 @@
 ## What it does
 
 - Answers objective mutual-fund questions from local official documents only.
-- Retrieves from HDFC fund PDFs with FAISS and `all-MiniLM-L6-v2` embeddings.
+- Retrieves from HDFC fund PDFs with FAISS and OpenAI embeddings.
 - Refuses investment advice and blocks sensitive personal information.
 - Shows short source-backed responses with a single official citation and source date.
 
