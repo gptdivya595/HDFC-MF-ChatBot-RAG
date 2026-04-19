@@ -436,10 +436,10 @@ async function submitCurrentQuestion() {
   await askQuestion(value);
 }
 
-sendBtn.addEventListener("click", submitCurrentQuestion);
+sendBtn?.addEventListener("click", submitCurrentQuestion);
 
-input.addEventListener("input", autoResizeTextarea);
-input.addEventListener("keydown", (event) => {
+input?.addEventListener("input", autoResizeTextarea);
+input?.addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();
     submitCurrentQuestion();
@@ -450,7 +450,7 @@ input.addEventListener("keydown", (event) => {
   }
 });
 
-chipsWrap.addEventListener("click", async (event) => {
+chipsWrap?.addEventListener("click", async (event) => {
   const chip = event.target.closest("[data-q]");
   if (!chip) return;
   chip.classList.add("pulse");
@@ -458,13 +458,13 @@ chipsWrap.addEventListener("click", async (event) => {
   await askQuestion(chip.dataset.q || "");
 });
 
-aboutButton.addEventListener("click", openAbout);
-aboutClose.addEventListener("click", closeAbout);
-aboutModal.addEventListener("click", (event) => {
+aboutButton?.addEventListener("click", openAbout);
+aboutClose?.addEventListener("click", closeAbout);
+aboutModal?.addEventListener("click", (event) => {
   if (event.target === aboutModal) closeAbout();
 });
 
-statusButton.addEventListener("click", async () => {
+statusButton?.addEventListener("click", async () => {
   const opening = !statusCard.classList.contains("open");
   setStatusCardOpen(opening);
   if (opening) {
@@ -472,7 +472,7 @@ statusButton.addEventListener("click", async () => {
   }
 });
 
-rebuildBtn.addEventListener("click", rebuildIndex);
+rebuildBtn?.addEventListener("click", rebuildIndex);
 
 activityGraph?.addEventListener("click", flashActivityGraph);
 activityGraph?.addEventListener("keydown", (event) => {
@@ -482,26 +482,26 @@ activityGraph?.addEventListener("keydown", (event) => {
   }
 });
 
-resetButton.addEventListener("click", () => {
+resetButton?.addEventListener("click", () => {
   state.messages = [];
   renderMessages();
   setStatusCardOpen(false);
   showToast("Started a new conversation", "success");
 });
 
-introStart.addEventListener("click", () => dismissIntro(true));
-introAgain.addEventListener("click", () => {
+introStart?.addEventListener("click", () => dismissIntro(true));
+introAgain?.addEventListener("click", () => {
   dismissIntro(false);
   showToast("Intro will be shown again next time", "info");
 });
 
-introButton.addEventListener("click", () => {
+introButton?.addEventListener("click", () => {
   intro.classList.remove("hidden", "leaving");
 });
 
-docsLink.addEventListener("click", () => showToast("Opening API docs", "info"));
+docsLink?.addEventListener("click", () => showToast("Opening API docs", "info"));
 
-chatScroll.addEventListener("click", async (event) => {
+chatScroll?.addEventListener("click", async (event) => {
   const copyButton = event.target.closest("[data-copy]");
   if (!copyButton) return;
   try {
@@ -512,7 +512,7 @@ chatScroll.addEventListener("click", async (event) => {
   }
 });
 
-if (localStorage.getItem(INTRO_STORAGE_KEY) === "1") {
+if (intro && localStorage.getItem(INTRO_STORAGE_KEY) === "1") {
   intro.classList.add("hidden");
 }
 
